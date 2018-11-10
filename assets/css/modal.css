@@ -55,41 +55,107 @@
     cursor: pointer;
 }
 
-.modal img {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    height: 50px;
-    width: 50px;
+#gamezone h3{
+    text-align: center;
+    font-size: 22px;
+}
+
+#gamezone p{
+    text-align: center;
+    font-size: 3    2px;
+}
+
+#challenged, #gamezone {
+    display: show;
+}
+
+#battlefield {
+    width: 85%;
+    height: 150px;
+    margin: 0 auto;
+    border: 10px solid black;
+}
+
+#myarea{
+    width: 30%;
+    border: 1px solid orange; 
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+
+#myarea img {
+    max-height: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+#results{
+    width: 30%;
+    border: 1px solid orange; 
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+
+#opparea{
+    width: 30%;
+    border: 1px solid orange; 
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+    text-align: center;
+    font-size: 50px;
+}
+
+#opparea img {
+    max-height: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+#choiceholder{
+    width: 85%;
+    height: 150px;
+    margin: 0 auto;
+    border: 10px solid black;
+}
+
+.choice {
+    width: 30%;
+    height: 100%;
+    display: inline-block;
+    text-align: center;
     cursor: pointer;
+    vertical-align: middle;
+}
+.choice:hover {
+    background: grey;
 }
 
-#settingscreen {
-    display: none;
+
+.choice img {
+    max-height: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    vertical-align: middle;
 }
 
+#rock img{
+    margin-top: 3px;
+}
 
-.setting-option {
+#btn-holder2 {
     height: 50px;
-    width: 60%;
-    display: block;
-    margin: 10px auto;
+}
+
+#btn-center2 {
+    height: 50px;
+    width: 250px;
+    margin: 15px auto 0 auto;
 }
 
 
-.label {
-    font-size: 25px;
-    float:left;
-    margin-top: 15px;
-}
-
-.diff:hover {
-    cursor: pointer;
-}
-
-#easy, #musicon, #soundon {
-    background: lightblue;
-}
 
 @media screen and (max-width: 975px) {
     .setting-option {
