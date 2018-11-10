@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Rock Paper Scissors</title>
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+    <script src="https://www.gstatic.com/firebasejs/5.5.8/firebase.js"></script>
+    <link rel="stylesheet" href="assets/css/reset.css">
+    <link rel="stylesheet" href="assets/css/modal.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <div id="myModal" class="modal">
+        <div id="titlescreen" class="modal-content">
+            <h1>Welcome to Rock Paper Scissors!!</h1>
+            <p>&bull; Please Choose a Display Name.</p>
+            <p>&bull; Must be unqiue and contain no special characters</p>
+            <p>&bull; Have Fun!</p>
+            <div class="btn-cont">
+                
+                <p>Display Name: <input id="name" type="text"></p>
+                <button id="namechoice">Begin</button>
+            </div>
+        </div>
+        <div id="challenged" class="modal-content">
+            <p>You have been challenged by: <span id="challenger"></span></p>
+            <button id="accept">Accept</button>
+            <button id="decline">Decline</button>
+        </div>
+        <div id="gamezone" class="modal-content">
+                <p>Rock - Paper - Scissors</p>
+                <div id="battlefield">
+                    <div id="myarea"></div>
+                    <div id="results"></div>
+                    <div id="opparea"></div>
+                </div>
+                <div id="choiceholder">
+                    <div class="choice" id="rock"></div>
+                    <div class="choice" id="paper"></div>
+                    <div class="choice" id="scissors"></div>
+                </div>
+                
+            </div>
+    </div>
+    <h1 id="title">Rock Paper Scissors</h1>
+    <div id="lobby">
+            <h1 id="title-lobby">Game Lobby</h1>
+            <table id="game-lobby">
+                <tr>
+                    <th>Display Name</th>
+                    <th>Wins</th>
+                    <th>Losses</th>
+                    <th>Status</th>
+                </tr>
+            </table>
+    </div>
+    <div id="challengeCard">
+        <div id="opponent">
+            <p class="opptitles">Display Name</p>
+            <p id="challengename"></p>
+            <p class="opptitles">Wins</p>
+            <p id="challengewins"></p>
+            <p class="opptitles">Losses:</p>
+            <p id="challengelosses"></p>
+        </div>
+        <div id="btn-holder">
+            <div id="btn-center">
+                <button id="challenge">Challenge</button>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="assets/javascript/game.js"></script>
+</html>

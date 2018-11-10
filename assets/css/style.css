@@ -1,0 +1,96 @@
+#title{
+    text-align: center;
+    font-size: 72px;
+}
+
+#title-lobby{
+    text-align: center;
+    font-size: 36px;
+}
+
+#lobby{
+    width: 60%;
+    height: 200px;
+    border: 5px solid black;
+    margin: 100px auto 30px auto;
+    overflow: auto;
+}
+
+table, th, td{
+    text-align: center;
+    border: 1px solid black;
+}
+
+td {
+    font-size: 20px;
+}
+
+#game-lobby {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#game-lobby tr:nth-child(even){background-color: #f2f2f2;}
+
+#game-lobby tr:hover {
+    background-color: #ddd;
+    cursor: pointer;
+}
+
+#game-lobby th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: center;
+    background-color: #0086F1;
+    color: white;
+}
+
+#challengeCard {
+    width: 60%;
+    height: 200px;
+    margin: 0 auto;
+    border: 3px solid black;
+}
+
+#opponent{
+    height: 100%;
+    width: 49%;
+    float: left;
+    text-align: center;
+    font-size: 22px;
+}
+
+.opptitles {
+    font-weight: bold;
+    text-decoration: underline;
+    margin: 10px 0 5px 0;
+}
+
+
+#btn-holder {
+    width: 49%;
+    float: right;
+    height: 100%;
+}
+
+
+#btn-center {
+    width: 200px;
+    height: 50px;
+    margin: 60px auto 0 auto;
+}
+
+#challenge {
+    width: 200px;
+    height: 50px;
+    background: red;
+    color: white;
+    cursor: pointer;
+}
+
+#challenged, #gamezone {
+    display: none;
+}
+
+
