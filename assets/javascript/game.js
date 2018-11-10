@@ -88,7 +88,7 @@ var game = {
             game.playerIDs = Object.keys(data.val())
             var myopp = game.players[game.myID].opponent;
             if (game.players[game.myID].challenge == true && game.players[myopp].opponent == game.myID ) {
-                $("#gamearea").attr("style", "display: block;");
+                $("#gamezone").attr("style", "display: block;");
                 $("#myModal").attr("style", "display: block;");
             } else if (game.players[game.opponentID].opponent == null) {
                 game.opponent = null;
@@ -177,7 +177,7 @@ $("#accept").on("click", function() {
     update["/"+game.opponentID + "/challenge"] = true;
     update["/"+game.opponentID + "/opponent"] = game.myID;
     database.ref("/players").update(update);
-    $("#gamearea").attr("style", "display: block;")
+    $("#gamezone").attr("style", "display: block;")
     $("#challenged").attr("style", "display: none;")
     $("#myModal").attr("style", "display: block;")
 })
