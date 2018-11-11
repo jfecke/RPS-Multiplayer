@@ -101,9 +101,10 @@ var game = {
                 $("#gamezone").attr("style", "display: block;");
                 $("#myModal").attr("style", "display: block;");
                 game.playGame();
-            } else if (game.players[game.opponentID].opponent == null) {
-                game.opponent = null;
-            }         
+            } 
+            // else if (game.players[game.opponentID].opponent == null) {
+            //     game.opponent = null;
+            // }         
         })
     },
     playGame: function() {
