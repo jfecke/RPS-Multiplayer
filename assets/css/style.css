@@ -1,6 +1,21 @@
+body {
+    background: url(../images/background.png);
+    font-family: 'Share Tech Mono', monospace;
+}
+
+#maincontent {
+    margin: 60px auto 0 auto;
+    width: 60%;
+    height: 800px;
+    border: 10px solid #0086F1;
+    background: white;
+    z-index: 1;
+}
+
 #title{
     text-align: center;
     font-size: 72px;
+    text-decoration: underline;
 }
 
 #title-lobby{
@@ -9,14 +24,27 @@
 }
 
 #lobby{
-    width: 60%;
-    height: 200px;
-    border: 5px solid black;
-    margin: 100px auto 30px auto;
+    width: 90%;
+    height: 250px;
+    margin: 0 auto 30px auto;
     overflow: auto;
+    text-align: center;
 }
 
-table, th, td{
+#lobby-holder {
+    width: 95%;
+    height: 200px;
+    margin: 0 auto;
+    overflow: auto;
+    text-align: center;
+}
+
+table {
+    text-align: center;
+    border: 5px solid black;
+}
+
+th, td{
     text-align: center;
     border: 1px solid black;
 }
@@ -29,6 +57,7 @@ td {
     font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
     border-collapse: collapse;
     width: 100%;
+    margin: 0 auto;
 }
 
 #game-lobby tr:nth-child(even){background-color: #f2f2f2;}
@@ -47,24 +76,26 @@ td {
 }
 
 #challengeCard {
-    width: 60%;
-    height: 200px;
+    width: 50%;
+    height: 150px;
     margin: 0 auto;
     border: 3px solid black;
-}
-
-#opponent{
-    height: 100%;
-    width: 49%;
-    float: left;
     text-align: center;
     font-size: 22px;
+    background: white;
 }
 
 .opptitles {
     font-weight: bold;
-    text-decoration: underline;
-    margin: 10px 0 5px 0;
+    margin: 10px 0px 5px 0;
+}
+
+span {
+    font-weight: normal;
+}
+
+#challengewins {
+    margin-right: 40px;
 }
 
 
@@ -76,18 +107,57 @@ td {
 
 
 #btn-center {
-    width: 200px;
+    width: 270px;
     height: 50px;
-    margin: 60px auto 0 auto;
+    margin: 20px auto 0 auto;
 }
 
 #challenge {
-    width: 200px;
+    margin: 0 auto;
     height: 50px;
-    background: red;
+    width: 250px;
+    border: 5px solid black;
+    background: #0086F1;
     color: white;
+    font-size: 22px;
     cursor: pointer;
 }
 
+#chat-cont{
+    width:60%;
+    height: 200px;
+    margin: 30px auto;  
+}
 
+#chat-window {
+    width: 98%;
+    margin: 0 auto;
+    height: 150px;
+    border: 2px solid grey;
+    overflow: scroll;
+}
+
+#control-cont {
+    width: 90%;
+    height: 30px;
+    margin: 5px auto;
+}
+
+#talk {
+    width: 75%;
+    display: inline-block;
+    height: 20px;
+}
+
+#chat {
+    width: 70px;
+    float: right;
+    height: 90%;
+    margin-right: 10px;
+    border: 2px solid black;
+    background: #0086F1;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+}
 
