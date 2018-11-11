@@ -378,7 +378,8 @@ database.ref("/players").on("value", function(data){
     }
 })
 
-database.ref("/messages").on("child_added", function(data){
+//database.ref("/messages").on("child_added", function(data){
+database.ref("/messages").orderByChild("date").limitToLast(1).on("child_added", function(data) {
     console.log(data.val());
     var username = data.val().displayName;
     var message = data.val().message;
