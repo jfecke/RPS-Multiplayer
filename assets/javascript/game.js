@@ -1,4 +1,15 @@
-  // Initialize Firebase
+  // TO DO LIST
+  // 1. Detect Opponent Disocnnect and abort
+  // 2. Make better choice selection
+  // 2a. Fix choice selection glitch 
+  // 3. Create Chat window in lobby
+  // 4. Make display name resitrictions and checks
+  // 5. Make Win, Lose, and Tie screens better
+  // 6. Make Vitory or Defeat screens
+  // 7. Make mobile
+  // 8. Add Sound
+  // 9. 
+  // 10.
 var config = {
 apiKey: "AIzaSyC57IjpWiDzhAPtF_RDyU61ssXIzQU8Qi4",
 authDomain: "rps-multiplayer-2dcb5.firebaseapp.com",
