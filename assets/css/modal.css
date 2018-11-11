@@ -55,6 +55,10 @@
     cursor: pointer;
 }
 
+#gamezone{
+    display: none;
+}
+
 #gamezone h3{
     text-align: center;
     font-size: 22px;
@@ -65,7 +69,7 @@
     font-size: 3    2px;
 }
 
-#challenged, #gamezone {
+#challenged{
     display: none;
 }
 
@@ -118,7 +122,6 @@
     width: 85%;
     height: 150px;
     margin: 0 auto;
-    border: 10px solid black;
 }
 
 .choice {
@@ -128,11 +131,16 @@
     text-align: center;
     cursor: pointer;
     vertical-align: middle;
+    border: 3px solid black;
 }
 .choice:hover {
     background: grey;
 }
 
+#winner, #loser, #tied {
+    display: none;
+    font-size: 40px;
+}
 
 .choice img {
     max-height: 100%;

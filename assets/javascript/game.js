@@ -11,7 +11,6 @@ firebase.initializeApp(config);
 var database = firebase.database();
 var connectionsRef = database.ref("/connections");
 var connectedRef = database.ref(".info/connected");
-var newplayer = {};
 
 var game = {
     myID: null,
@@ -25,12 +24,14 @@ var game = {
     myConnect: [],
     players: {},
     playerIDs: [],
-    phase: 1,
+    phase: 0,
     round: 1,
     roundwins: 0,
     roundlosses: 0,
     intervalTime: null,
+    waiting: false,
     assignPlayer: function() {
+        var newplayer = {};
         newplayer = {
             displayName: game.myDisplayName,
             wins: game.wins,
@@ -67,7 +68,8 @@ var game = {
                 
                 if (this.id != game.myID) {
                 game.opponentID = this.id
-
+                console.log(this.id)
+                    
                 $("#challengename").text(game.players[game.opponentID].displayName);
                 $("#challengewins").text(game.players[game.opponentID].wins);
                 $("#challengelosses").text(game.players[game.opponentID].losses);
@@ -89,22 +91,8 @@ var game = {
         $("#challenged").attr("style", "display: block;")
         $("#myModal").attr("style", "display: block;")
     },
-    waitResponse: function(){
-        alert("waiting for response!")
+    waitResponse: function(){     
         //show waiting on player modal
-        database.ref("/players").on("value", function(data){
-            game.players = data.val();
-            game.playerIDs = Object.keys(data.val())
-            var myopp = game.players[game.myID].opponent;
-            if (game.players[game.myID].challenge == true && game.players[myopp].opponent == game.myID ) {
-                //hide waiting on player modal
-                $("#gamezone").attr("style", "display: block;");
-                $("#myModal").attr("style", "display: block;");
-                game.playGame();
-            } else if (game.players[game.opponentID].opponent == null) {
-                game.opponent = null;
-            }         
-        })
     },
     playGame: function() {
         if (game.roundwins == 2) {
@@ -112,13 +100,14 @@ var game = {
             var update = {};
             update["/"+game.myID + "/wins"] = game.wins;
             database.ref("/players").update(update);
-
-        } else if (game.roundlosses == 2) {
+            game.matchReset();
+        } else if (game.roundlosses >= 2) {
             game.losses++;
+            var update = {};
             update["/"+game.myID + "/losses"] = game.losses;
             database.ref("/players").update(update);
             game.matchReset();
-        } else if (playerleft = 1) {
+        } else if (game.roundlosses === 10) {
             //how to determine if opponent left?
             game.matchReset();
         }
@@ -132,19 +121,21 @@ var game = {
         //Display timer on screen
     },
     setTimer: function(){
-        game.timer = 5;
+        game.timer = 150;
         game.chooseChoice();
         game.intervalTime = setInterval(game.chooseChoice, 1000);
     },
     chooseChoice: function() {
         game.timer--;
+        console.log(game.timer)
         $("#timer").attr("style", "display: block;");
-        $("#remaing").text(game.timer);
+        $("#remaining").text(game.timer);
         if (game.ready && game.oppReady) {
             clearInterval(game.intervalTime)
+            console.log("ready")
             game.checkWinner();
         }
-        if (game.timer < 0) {
+        if (game.timer <= 0) {
             clearInterval(game.intervalTime);
             game.outOfTime();
         }
@@ -165,7 +156,7 @@ var game = {
         } else if (game.players[game.myID].choice == "paper"){
             if (game.oppChoice == "paper") {
                 game.tie();
-            } else if (game.oppChoice == "scissors") {
+            } else if (game.oppChoice == "rock") {
                 game.win("paper");
             } else {
                 game.lose("paper")
@@ -173,7 +164,7 @@ var game = {
         } else {
             if (game.oppChoice == "scissors") {
                 game.tie();
-            } else if (game.oppChoice == "scissors") {
+            } else if (game.oppChoice == "paper") {
                 game.win("scissors");
             } else {
                 game.lose("scissors")
@@ -189,37 +180,42 @@ var game = {
         game.round++;
     },
     win: function(value){
+        console.log("win")
         game.roundwins++;
         $("#timer").attr("style", "display: none;")
         $("#winner").attr("style", "display: block;")
         setTimeout(game.resetRound, 3000);
     },
     lose: function(value){
+        console.log("lose")
         game.roundlosses++;
         $("#timer").attr("style", "display: none;")
         $("#loser").attr("style", "display: block;")
-        $("#loser").
-        setTimeout(game.resetRound, 3000);
+         setTimeout(game.resetRound, 3000);
     },
     tie: function(){
+        console.log("tie")
         $("#timer").attr("style", "display: none;");
         $("#tied").attr("style", "display: block;");
         setTimeout(game.resetRound, 3000);
     },
     resetRound: function() {
-        game.oppChoice = null;
-        game.oppReady = false;
         game.ready = false;
-        game.phase = 1;
         game.round++;
         $("#myarea").empty();
         $("#opparea").empty();
         $("#opparea").text("Waiting on Opponent");
-        game.playRound();
         $("#loser").attr("style", "display: none;");
         $("#winner").attr("style", "display: none;");
         $("#tied").attr("style", "display: none;");
         $("#timer").attr("style", "display: block;");
+        var update = {}
+        update["/"+game.myID + "/choice"] = null;
+        database.ref("/players").update(update);
+        game.oppChoice = null;
+        game.oppReady = false;
+
+        game.playGame();
     },
     matchReset: function(){
         game.ready = false;
@@ -231,12 +227,12 @@ var game = {
         game.opDisplayName = null;
         game.oppChoice = null;
         game.oppReady = false;
-        var update = {};
-        update["/"+game.myID + "/challenge"] = false;
-        update["/"+game.myID + "/opponent"] = null;
-        update["/"+game.myID + "/status"] = "Available";
-        update["/"+game.myID + "/choice"] = null;
-        database.ref("/players").update(update);
+        var update1 = {};
+        update1["/"+game.myID + "/challenge"] = false;
+        update1["/"+game.myID + "/opponent"] = null;
+        update1["/"+game.myID + "/status"] = "Available";
+        update1["/"+game.myID + "/choice"] = null;
+        database.ref("/players").update(update1);
         $("#gamezone").attr("style", "display: none;");
         $("#myModal").attr("style", "display: none;");
     }
@@ -252,19 +248,43 @@ connectedRef.on("value", function(snap) {
 //database.ref().on("child-added", function(snapshot) {});  only new records added
 //database.ref().orderbyChild("dateadded").limitToLast(1).on("child-added", function(snapshot) {});
 //onChildRemoved 
-database.ref("/players").on("value", function(data){
-    game.players = data.val();
-    game.playerIDs = Object.keys(data.val())
-    game.populateLobby();
-    game.checkChallenge();
+database.ref("/players").on("value", function(data){  
+    if (game.waiting == false) {
+        game.players = data.val();
+        game.playerIDs = Object.keys(data.val())
+        game.populateLobby();
+        game.checkChallenge();
+    } 
 });
 
-database.ref("/players/" + game.opponentID ).on("value", function(data){
-    if (data.choice != null && game.phase == 2 ) {
-        game.oppChoice = data.choice;
-        game.oppReady = true;
-        $("#opparea").text("Ready")
+database.ref("/players").on("value", function(data){  
+    if (game.waiting == true && game.players[game.opponentID].challenge !== undefined) {
+        game.players = data.val()
+        var myopp = game.players[game.myID].opponent;
+        console.log(myopp)
+        if (game.players[game.myID].challenge == true && game.players[myopp].opponent == game.myID && game.waiting == true ) {
+            //hide waiting on player modal
+            $("#gamezone").attr("style", "display: block;");
+            $("#myModal").attr("style", "display: block;");
+            game.waiting = false;
+            game.playGame();
+        } else if (game.waiting == true && game.players[game.opponentID].challenge == false) {
+            game.opponent = null;
+            game.waiting = false;
+        }   
     }
+    
+})
+
+database.ref("/players").on("value", function(data){
+    if (game.opponentID != null) {
+        if (data.val()[game.opponentID].choice != undefined && (game.phase == 1 || game.phase == 2) ) {
+            game.oppChoice = data.val()[game.opponentID].choice;
+            game.oppReady = true;
+            $("#opparea").text("Ready")
+        }
+    }
+    
 })
 
 
@@ -290,17 +310,17 @@ $("#namechoice").on("click", function(){
 })
 
 $("#challenge").on("click", function() {
-    if (game.opponentID == null) {
-
-    } else {
+    if (game.opponentID != null) {
         if (game.players[game.opponentID].status == "Available") {
-            var update = {};
-            update["/"+game.opponentID + "/status"] = "Busy";
-            update["/"+game.myID + "/status"] = "Busy";
-            update["/"+game.opponentID + "/challenge"] = true;
-            update["/"+game.opponentID + "/opponent"] = game.myID;
-            database.ref("/players").update(update);
-            game.waitResponse();
+        var update = {};
+        game.waiting = true;
+        update["/"+game.opponentID + "/status"] = "Busy";
+        update["/"+game.myID + "/status"] = "Busy";
+        update["/"+game.opponentID + "/challenge"] = true;
+        update["/"+game.opponentID + "/opponent"] = game.myID;
+        database.ref("/players").update(update);
+        game.waitResponse();
+        
         } else {
             alert("Sorry that player is busy, please challenge another.")
         }
@@ -316,7 +336,6 @@ $("#accept").on("click", function() {
     database.ref("/players").update(update);
     $("#gamezone").attr("style", "display: block;");
     $("#challenged").attr("style", "display: none;");
-    $("#myModal").attr("style", "display: block;");
     game.playGame();
 })
 
@@ -342,6 +361,7 @@ $(".choice").on("click", function(){
 })
 
 $("#makechoice").on("click", function(){
+    console.log(game.players[game.myID].choice)
     if (game.players[game.myID].choice == null){
         alert("Please make a choice")
     } else{

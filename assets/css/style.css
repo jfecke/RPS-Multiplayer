@@ -14,6 +14,7 @@
     border: 5px solid black;
     margin: 100px auto 30px auto;
     overflow: auto;
+    text-align: center;
 }
 
 table, th, td{
@@ -28,7 +29,8 @@ td {
 #game-lobby {
     font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
     border-collapse: collapse;
-    width: 100%;
+    width: 90%;
+    margin: 0 auto;
 }
 
 #game-lobby tr:nth-child(even){background-color: #f2f2f2;}
