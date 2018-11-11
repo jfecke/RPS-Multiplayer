@@ -7,6 +7,7 @@
     <title>Rock Paper Scissors</title>
     <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
     <script src="https://www.gstatic.com/firebasejs/5.5.8/firebase.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Share+Tech+Mono" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/reset.css">
     <link rel="stylesheet" href="assets/css/modal.css">
     <link rel="stylesheet" href="assets/css/style.css">
@@ -30,44 +31,53 @@
             <button id="decline">Decline</button>
         </div>
         <div id="gamezone" class="modal-content">
-                <p>Rock - Paper - Scissors</p>
-                <div id="battlefield">
-                    <div id="myarea"></div>
-                    <div id="results">
-                        <div id="timer">
-                           <p>Time Left:</p>
-                           <p id="remaining"></p>
-                        </div>
-                        <div id="winner">You Win!</div>
-                        <div id="loser">You Lose!</div>
-                        <div id="tied">You Tied!</div>
-                        
-                </div>
-                    <div id="opparea">Waiting on Opponent</div>
-                </div>
-                <br>
-                <h3>Choose your Weapon!</h3>
-                <div id="choiceholder">
-                    <div class="choice" id="rock">
-                        <img src="assets/images/rock.png" alt="">
+            <h1>Rock - Paper - Scissors</h1>
+            <div id="battlefield">
+                <div id="myarea"></div>
+                <div id="results">
+                    <div id="timer">
+                        <p>Time Left:</p>
+                        <p id="remaining">10</p>
                     </div>
-                    <div class="choice" id="paper">
-                        <img src="assets/images/paper.png" alt="">
-                    </div>
-                    <div class="choice" id="scissors">
-                        <img src="assets/images/scissors.png" alt="">
-                    </div>
+                    <div id="winner">You Win!</div>
+                    <div id="loser">You Lose!</div>
+                    <div id="tied">You Tied!</div>
+                    
                 </div>
-                <div id="btn-holder2">
-                    <div id="btn-center">
-                        <button id="makechoice">Submit</button>
-                    </div>
+                <div id="opparea">
+                    <div id="opptitle">Waiting on Opponent</div>
                 </div>
-                
             </div>
+            <br>
+            <h3>Choose your Weapon!</h3>
+            <div id="choiceholder">
+                <div class="choice" id="rock">
+                    <img src="assets/images/rock.png" alt="">
+                </div>
+                <div class="choice" id="paper">
+                    <img src="assets/images/paper.png" alt="">
+                </div>
+                <div class="choice" id="scissors">
+                    <img src="assets/images/scissors.png" alt="">
+                </div>
+            </div>
+            <div id="btn-holder2">
+                <div id="btn-center">
+                    <button id="makechoice">Submit</button>
+                </div>
+            </div>
+        </div>
+        <div id="waiting"  class="modal-content">
+                <h4 class="boldp">Waiting on Opponent</h4>
+                <br>
+                <p>Time Left: <span id="waittime">10</span></p>
+                <button id="cancel">Cancel</button>
+        </div>
+
     </div>
-    <h1 id="title">Rock Paper Scissors</h1>
-    <div id="lobby">
+    <div id="maincontent">
+        <h1 id="title">Rock-Paper-Scissors</h1>
+         <div id="lobby">
             <h1 id="title-lobby">Game Lobby</h1>
             <table id="game-lobby">
                 <tr>
@@ -77,22 +87,16 @@
                     <th>Status</th>
                 </tr>
             </table>
-    </div>
-    <div id="challengeCard">
-        <div id="opponent">
-            <p class="opptitles">Display Name</p>
-            <p id="challengename"></p>
-            <p class="opptitles">Wins</p>
-            <p id="challengewins"></p>
-            <p class="opptitles">Losses:</p>
-            <p id="challengelosses"></p>
         </div>
-        <div id="btn-holder">
+        <div id="challengeCard">
+            <p class="opptitles">Display Name: <span id="challengename"></span></p>
+            <p class="opptitles">Wins: <span id="challengewins"></span> Losses: <span id="challengelosses"></span> </p>
             <div id="btn-center">
                 <button id="challenge">Challenge</button>
             </div>
         </div>
     </div>
+    
 </body>
 <script src="assets/javascript/game.js"></script>
 </html>

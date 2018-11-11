@@ -29,7 +29,9 @@ var game = {
     roundwins: 0,
     roundlosses: 0,
     intervalTime: null,
+    waitInterval: null,
     waiting: false,
+    oppIMG: null,
     assignPlayer: function() {
         var newplayer = {};
         newplayer = {
@@ -90,9 +92,28 @@ var game = {
         $("#challenger").text(oppname);
         $("#challenged").attr("style", "display: block;")
         $("#myModal").attr("style", "display: block;")
+        var waittime = 10;
+        waitInterval = setInterval(function(){
+            waittime--
+            $("#waittime").text(waittime);
+            if (waittime <= 0) {
+                clearInterval(waitInterval);
+                game.decline();
+            }
+        }, 1000);
     },
     waitResponse: function(){     
-        //show waiting on player modal
+        $("#waiting").attr("style", "display: block;");
+        $("#myModal").attr("style", "display: block;");
+        var waittime = 10;
+        waitInterval = setInterval(function(){
+            waittime--
+            $("#waittime").text(waittime);
+            if (waittime <= 0) {
+                clearInterval(waitInterval);
+                game.cancelWait();
+            }
+        }, 1000);
     },
     playGame: function() {
         if (game.roundwins == 2) {
@@ -118,10 +139,9 @@ var game = {
     playRound: function() {
         game.phase = 1;
         game.setTimer();
-        //Display timer on screen
     },
     setTimer: function(){
-        game.timer = 150;
+        game.timer = 10;
         game.chooseChoice();
         game.intervalTime = setInterval(game.chooseChoice, 1000);
     },
@@ -142,8 +162,8 @@ var game = {
     },
     checkWinner: function() {
         game.phase = 3;
-        $("#opparea").text("");
-        var oppIMG = $("<img>").attr("src", "assets/images/"+game.oppChoice+".png")
+        $("#opptitle").attr("style", "display: none;");
+        oppIMG = $("<img>").attr("src", "assets/images/"+game.oppChoice+".png")
         $("#opparea").append(oppIMG);
         if (game.players[game.myID].choice == "rock") {
             if (game.oppChoice == "rock") {
@@ -172,9 +192,12 @@ var game = {
         }
     },
     outOfTime: function() {
-        if (game.ready) {
+        if (game.ready == false && game.oppReady == false) {
+            game.tie()
+        } else if (game.ready) {
             game.win("time")
-        } else {
+        } 
+        else {
             game.lose("time")
         }
         game.round++;
@@ -203,8 +226,9 @@ var game = {
         game.ready = false;
         game.round++;
         $("#myarea").empty();
-        $("#opparea").empty();
-        $("#opparea").text("Waiting on Opponent");
+        oppIMG.remove();
+        $("#opptitle").attr("style", "display: block;");
+        $("#opptitle").text("Waiting on Opponent");
         $("#loser").attr("style", "display: none;");
         $("#winner").attr("style", "display: none;");
         $("#tied").attr("style", "display: none;");
@@ -214,7 +238,6 @@ var game = {
         database.ref("/players").update(update);
         game.oppChoice = null;
         game.oppReady = false;
-
         game.playGame();
     },
     matchReset: function(){
@@ -235,6 +258,35 @@ var game = {
         database.ref("/players").update(update1);
         $("#gamezone").attr("style", "display: none;");
         $("#myModal").attr("style", "display: none;");
+        $("#challengename").text("");
+        $("#challengewins").text("");
+        $("#challengelosses").text("");
+    },
+    cancelWait: function() {
+        $("#waiting").attr("style", "display: none;");
+        $("#myModal").attr("style", "display: none;");
+        var update = {};
+        update["/"+game.opponentID + "/status"] = "Available";
+        update["/"+game.myID + "/status"] = "Available";
+        update["/"+game.opponentID + "/challenge"] = false;
+        update["/"+game.opponentID + "/opponent"] = null;
+        database.ref("/players").update(update);
+        game.opponentID = null;
+        game.waiting = false;
+        $("#challengename").text("");
+        $("#challengewins").text("");
+        $("#challengelosses").text("");
+    },
+    decline: function() {
+        var update = {};
+        update["/"+game.opponentID + "/status"] = "Available";
+        update["/"+game.myID + "/status"] = "Available";
+        update["/"+game.myID + "/challenge"] = false;
+        update["/"+game.myID + "/opponent"] = null;
+        database.ref("/players").update(update);
+        $("#challenger").text("");
+        $("#challenged").attr("style", "display: none;")
+        $("#myModal").attr("style", "display: none;")
     }
 };
 
@@ -263,14 +315,15 @@ database.ref("/players").on("value", function(data){
         var myopp = game.players[game.myID].opponent;
         console.log(myopp)
         if (game.players[game.myID].challenge == true && game.players[myopp].opponent == game.myID && game.waiting == true ) {
-            //hide waiting on player modal
+            $("#waiting").attr("style", "display: none;");
             $("#gamezone").attr("style", "display: block;");
-            $("#myModal").attr("style", "display: block;");
             game.waiting = false;
+            clearInterval(waitInterval);
             game.playGame();
         } else if (game.waiting == true && game.players[game.opponentID].challenge == false) {
             game.opponent = null;
             game.waiting = false;
+            clearInterval(waitInterval);
         }   
     }
     
@@ -281,7 +334,8 @@ database.ref("/players").on("value", function(data){
         if (data.val()[game.opponentID].choice != undefined && (game.phase == 1 || game.phase == 2) ) {
             game.oppChoice = data.val()[game.opponentID].choice;
             game.oppReady = true;
-            $("#opparea").text("Ready")
+            $("#opptitle").attr("style", "display: block;");
+            $("#opptitle").text("Ready")
         }
     }
     
@@ -328,6 +382,7 @@ $("#challenge").on("click", function() {
 })
 
 $("#accept").on("click", function() {
+    clearInterval(waitInterval);
     var update = {};
     update["/"+game.opponentID + "/status"] = "In Game";
     update["/"+game.myID + "/status"] = "In Game";
@@ -340,15 +395,8 @@ $("#accept").on("click", function() {
 })
 
 $("#decline").on("click", function() {
-    var update = {};
-    update["/"+game.opponentID + "/status"] = "Available";
-    update["/"+game.myID + "/status"] = "Available";
-    update["/"+game.myID + "/challenge"] = false;
-    update["/"+game.myID + "/opponent"] = null;
-    database.ref("/players").update(update);
-    $("#challenger").text("");
-    $("#challenged").attr("style", "display: none;")
-    $("#myModal").attr("style", "display: none;")
+    clearInterval(waitInterval);
+    game.decline();
 })
 
 $(".choice").on("click", function(){
@@ -371,4 +419,8 @@ $("#makechoice").on("click", function(){
         database.ref("/players").update(update);
         game.ready = true;
     }
+})
+
+$("#cancel").on("click", function(){
+    game.cancelWait();
 })
