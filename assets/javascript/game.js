@@ -16,7 +16,6 @@ firebase.initializeApp(config);
 var database = firebase.database();
 var connectionsRef = database.ref("/connections");
 var connectedRef = database.ref(".info/connected");
-
 var game = {
     alpha: "abcdefghijklmnopqrstuvwxyz0123456789-_",
     alphachat: "abcdefghijklmnopqrstuvwxyz,.?!$&_-+=:;' 0123456789",
@@ -74,18 +73,16 @@ var game = {
             var status  = $("<td>").text(game.players[game.playerIDs[i]].status);
             newRow.append(name, win, lose, status);
             newRow.attr("id", game.playerIDs[i]);
-            newRow.on("click", function() {
-                
+           
+            newRow.on("click", function() { 
                 if (this.id != game.myID) {
                 game.opponentID = this.id
                 game.oppDisplayName = game.players[game.opponentID].displayName;
-                    
                 $("#challengename").text(game.players[game.opponentID].displayName);
                 $("#challengewins").text(game.players[game.opponentID].wins);
                 $("#challengelosses").text(game.players[game.opponentID].losses);
-                
                 }
-            } )
+            })
             $("#game-lobby").append(newRow);
         }
     },
@@ -338,10 +335,7 @@ database.ref("/players").on("value", function(data){
         game.playerIDs = Object.keys(data.val())
         game.populateLobby();
         game.checkChallenge();
-    } 
-});
-
-database.ref("/players").on("value", function(data){  
+    }
     if (game.waiting == true && game.players[game.opponentID].challenge !== undefined) {
         game.players = data.val();
         var myopp = game.players[game.myID].opponent;
@@ -356,9 +350,6 @@ database.ref("/players").on("value", function(data){
             game.cancelWait();
         }   
     }
-})
-
-database.ref("/players").on("value", function(data){
     if (typeof(game.players[game.opponentID])=="undefined" && (game.phase == 1 || game.phase == 2)) {
         game.disconnect = true;
     }
@@ -370,9 +361,8 @@ database.ref("/players").on("value", function(data){
             $("#opptitle").text("Ready");
         }
     }
-})
+});
 
-//database.ref("/messages").on("child_added", function(data){
 database.ref("/messages").orderByChild("date").limitToLast(1).on("child_added", function(data) {
     var username = data.val().displayName;
     var message = data.val().message;
@@ -389,7 +379,6 @@ database.ref("/messages").orderByChild("date").limitToLast(1).on("child_added", 
         update["/"+ messageid] = null;
         database.ref("/messages").update(update);
     }
-    
 })
 
 $("#namechoice").on("click", function(){
@@ -397,13 +386,11 @@ $("#namechoice").on("click", function(){
     var chooseName = $("#name").val().trim();
     var unique = true;
     var isAlpha = true;
-    
     for (var i = 0; i < chooseName.length; i++) {
         if (game.alpha.indexOf(chooseName[i].toLowerCase()) < 0 ) {
             isAlpha = false;
         }
     }
-
     for (var i = 0; i < game.playerIDs.length; i++) {
         if (game.players[game.playerIDs[i]]["displayName"] == chooseName) {
             unique = false;
@@ -440,7 +427,6 @@ $("#challenge").on("click", function() {
         update["/"+game.opponentID + "/opponent"] = game.myID;
         database.ref("/players").update(update);
         game.waitResponse();
-        
         } else {
             alert("Sorry that player is busy, please challenge another.");
         }
