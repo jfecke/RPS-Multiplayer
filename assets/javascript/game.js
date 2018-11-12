@@ -269,7 +269,7 @@ var game = {
     },
     matchReset: function(){
         game.ready = false;
-        game.phase = 1;
+        game.phase = 0;
         game.round = 1;
         game.roundwins = 0;
         game.roundlosses = 0;
@@ -332,9 +332,6 @@ connectedRef.on("value", function(snap) {
     }
 });
 
-//database.ref().on("child-added", function(snapshot) {});  only new records added
-//database.ref().orderbyChild("dateadded").limitToLast(1).on("child-added", function(snapshot) {});
-//onChildRemoved 
 database.ref("/players").on("value", function(data){  
     if (game.waiting == false) {
         game.players = data.val();
@@ -363,7 +360,6 @@ database.ref("/players").on("value", function(data){
 
 database.ref("/players").on("value", function(data){
     if (typeof(game.players[game.opponentID])=="undefined" && (game.phase == 1 || game.phase == 2)) {
-        console.log("That sucks!!")
         game.disconnect = true;
     }
     else if (game.opponentID != null) {
