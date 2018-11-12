@@ -1,11 +1,9 @@
   // TO DO LIST
-  // 3. Create Chat window in lobby
-  // 4. Make display name resitrictions and checks
-  // 5. Make Win, Lose, and Tie screens better
-  // 6. Make Vitory or Defeat screens
-  // 7. Make mobile
-  // 8. Add Sound
-  // 9. 
+  // 1. Make Win, Lose, and Tie screens better
+  // 2. Make Vitory or Defeat screens
+  // 3. Make mobile
+  // 4. Add Sound
+  //  
 var config = {
 apiKey: "AIzaSyC57IjpWiDzhAPtF_RDyU61ssXIzQU8Qi4",
 authDomain: "rps-multiplayer-2dcb5.firebaseapp.com",
@@ -20,7 +18,7 @@ var connectionsRef = database.ref("/connections");
 var connectedRef = database.ref(".info/connected");
 
 var game = {
-    alpha: "abcdefghijklmnopqrstuvwxyz123456789-_",
+    alpha: "abcdefghijklmnopqrstuvwxyz0123456789-_",
     alphachat: "abcdefghijklmnopqrstuvwxyz,.?!$&_-+=:;' 0123456789",
     myID: null,
     myDisplayName: null,
@@ -400,9 +398,16 @@ database.ref("/messages").orderByChild("date").limitToLast(1).on("child_added", 
 
 $("#namechoice").on("click", function(){
     event.preventDefault();
-    var chooseName = $("#name").val();
+    var chooseName = $("#name").val().trim();
     var unique = true;
+    var isAlpha = true;
     
+    for (var i = 0; i < chooseName.length; i++) {
+        if (game.alpha.indexOf(chooseName[i].toLowerCase()) < 0 ) {
+            isAlpha = false;
+        }
+    }
+
     for (var i = 0; i < game.playerIDs.length; i++) {
         if (game.players[game.playerIDs[i]]["displayName"] == chooseName) {
             unique = false;
@@ -411,7 +416,7 @@ $("#namechoice").on("click", function(){
     if (unique == false) {
         alert("Display Name is taken, please choose a different one.")
     } 
-    else if (game.alpha.indexOf(chooseName.toLowerCase()) < 0) {
+    else if (isAlpha == false) {
         alert("Please use only letters, numbers, '-', and '_' ")
     }
     else if (chooseName.length > 11) {
@@ -513,7 +518,6 @@ $("#chat").on("click", function() {
             var isAlpha = false;
             console.log("Incorrect")
         }
-        
     }
     if (chatText.length <= 100 & isAlpha == true) {
         var chatObj = {
