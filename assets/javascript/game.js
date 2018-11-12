@@ -1,8 +1,11 @@
   // TO DO LIST
-  // 1. Make Win, Lose, and Tie screens better
-  // 2. Make Vitory or Defeat screens
-  // 3. Make mobile
-  // 4. Add Sound
+  // 
+  // 1. Limit choice submissions.
+  // 2. Do not use alerts, they pause timers.
+  // 3. Make Win, Lose, and Tie screens better
+  // 4. Make Vitory or Defeat screens
+  // 5. Make mobile
+  // 6. Add Sound
   //  
 var config = {
 apiKey: "AIzaSyC57IjpWiDzhAPtF_RDyU61ssXIzQU8Qi4",
