@@ -89,8 +89,8 @@ var game = {
     },
     checkChallenge: function() {
         if (game.players[game.myID].status == "Busy" && game.players[game.myID].opponent != null) {
+            game.challengedStatus = true;  
             game.challengeResponse();
-            game.challengedStatus = true;   
         }
     },
     challengeResponse: function() {
@@ -371,7 +371,7 @@ database.ref("/players").on("value", function(data){
             $("#opptitle").text("Ready");
         }
     }
-    if (game.challengedStatus = true && game.players[game.myID].status == "Available" ) {
+    if (game.challengedStatus == true && game.players[game.myID].status == "Available" ) {
         game.challengeRevoked();
     }
 });
