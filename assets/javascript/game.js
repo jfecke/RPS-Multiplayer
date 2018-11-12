@@ -20,8 +20,8 @@ var connectionsRef = database.ref("/connections");
 var connectedRef = database.ref(".info/connected");
 
 var game = {
-    alpha: "abcdefghijklmnopqrstuvwxyz",
-    alphachat: "abcdefghijklmnopqrstuvwxyz,.?!$&_-+=:;' ",
+    alpha: "abcdefghijklmnopqrstuvwxyz123456789-_",
+    alphachat: "abcdefghijklmnopqrstuvwxyz,.?!$&_-+=:;' 0123456789",
     myID: null,
     myDisplayName: null,
     opponentID: null,
@@ -380,12 +380,22 @@ database.ref("/players").on("value", function(data){
 
 //database.ref("/messages").on("child_added", function(data){
 database.ref("/messages").orderByChild("date").limitToLast(1).on("child_added", function(data) {
-    console.log(data.val());
     var username = data.val().displayName;
     var message = data.val().message;
-    var newp = $("<p>").text("["+username+"]: " + message)
-    console.log(username);
-    $("#chat-window").append(newp);
+    var date = data.val().date;
+    var messageid = data.val().messageid;
+    if (Date.now()-date <=2000) {
+        var newp = $("<p>").text("["+username+"]: " + message)
+        if (username == game.myDisplayName) {
+            newp.attr("style", "color: red");
+        }
+        $("#chat-window").append(newp);
+    } else {
+        update = {};
+        update["/"+ messageid] = null;
+        database.ref("/messages").update(update);
+    }
+    
 })
 
 $("#namechoice").on("click", function(){
@@ -400,7 +410,14 @@ $("#namechoice").on("click", function(){
     }
     if (unique == false) {
         alert("Display Name is taken, please choose a different one.")
-    } else {
+    } 
+    else if (game.alpha.indexOf(chooseName.toLowerCase()) < 0) {
+        alert("Please use only letters, numbers, '-', and '_' ")
+    }
+    else if (chooseName.length > 11) {
+        alert("Your name is too long, keep it under 112 characters.")
+    }
+    else {
         game.myDisplayName = chooseName;
         var update = {};
         update["/"+game.myID + "/displayName"] = game.myDisplayName;
@@ -487,31 +504,29 @@ $("#cancel").on("click", function(){
 })
 
 $("#chat").on("click", function() {
-    console.log("chat")
     var chatText = $("#talk").val().trim();
     var isAlpha = true;
     var userID = game.myDisplayName;
     var currentDate =  Date.now();
     for (var i = 0; i < chatText.length; i++) {
-        if (game.alphachat.indexOf(chatText[i]) < 0) {
+        if (game.alphachat.indexOf(chatText[i].toLowerCase()) < 0) {
             var isAlpha = false;
             console.log("Incorrect")
         }
         
     }
     if (chatText.length <= 100 & isAlpha == true) {
-        console.log("works")
-        console.log(userID, chatText, currentDate)
         var chatObj = {
             displayName: userID,
             message: chatText,
             date: currentDate
         }
-        console.log(chatObj)
-        database.ref("/messages").push(chatObj);
+        var pushid = database.ref("/messages").push(chatObj);
+        update = {};
+        update["/"+ pushid.path.pieces_[1]+ "/messageid"] = pushid.path.pieces_[1];
+        database.ref("/messages").update(update);
         $("#talk").val("")
     }
-    
-
-
 })
+
+

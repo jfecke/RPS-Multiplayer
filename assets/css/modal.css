@@ -54,9 +54,17 @@
 }
 
 #titlescreen {
-    min-height: 300px;
+    min-height: 400px;
     margin: 100px auto;
     display: block;
+}
+
+#titlescreen p {
+    font-size: 18px;
+}
+
+.bold {
+    font-weight: bold;
 }
 
 #gamezone{
