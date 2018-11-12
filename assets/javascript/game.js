@@ -23,7 +23,7 @@ var game = {
     myID: null,
     myDisplayName: null,
     opponentID: null,
-    opDisplayName: null,
+    oppDisplayName: null,
     oppChoice: "",
     oppReady: false,
     wins: 0,
@@ -40,6 +40,7 @@ var game = {
     waiting: false,
     oppIMG: null,
     disconnect: false,
+    choice: null,
     assignPlayer: function() {
         var newplayer = {};
         newplayer = {
@@ -77,7 +78,7 @@ var game = {
                 
                 if (this.id != game.myID) {
                 game.opponentID = this.id
-                console.log(this.id)
+                game.oppDisplayName = game.players[game.opponentID].displayName;
                     
                 $("#challengename").text(game.players[game.opponentID].displayName);
                 $("#challengewins").text(game.players[game.opponentID].wins);
@@ -167,8 +168,8 @@ var game = {
     checkWinner: function() {
         game.phase = 3;
         $("#opptitle").attr("style", "display: none;");
-        oppIMG = $("<img>").attr("src", "assets/images/"+game.oppChoice+".png")
-        $("#opparea").append(oppIMG);
+        $("#oppIMG").attr("src", "assets/images/"+game.oppChoice+".png")
+        $("#oppIMG").attr("style", "display: block;");
         if (game.disconnect == true) {
             game.disCheck();
         } else {
@@ -247,9 +248,7 @@ var game = {
         game.ready = false;
         game.round++;
         $("#myarea").empty();
-        if (typeof(oppIMG) != "undefined") {
-            oppIMG.remove();
-        }
+        $("#oppIMG").attr("style", "display: none;");
         $("#opptitle").attr("style", "display: block;");
         $("#opptitle").text("Waiting on Opponent");
         $("#loser").attr("style", "display: none;");
@@ -261,6 +260,7 @@ var game = {
         database.ref("/players").update(update);
         game.oppChoice = null;
         game.oppReady = false;
+        game.choice = null;
         if (game.disconnect == true) {
             game.disCheck();
         } else {
@@ -274,8 +274,9 @@ var game = {
         game.roundwins = 0;
         game.roundlosses = 0;
         game.opponentID = null;
-        game.opDisplayName = null;
+        game.oppDisplayName = null;
         game.oppChoice = null;
+        game.choice = null;
         game.oppReady = false;
         game.disconnect = false;
         var update1 = {};
@@ -354,9 +355,8 @@ database.ref("/players").on("value", function(data){
             clearInterval(waitInterval);
             game.playGame();
         } else if (game.waiting == true && game.players[game.opponentID].challenge == false) {
-            game.opponent = null;
-            game.waiting = false;
             clearInterval(waitInterval);
+            game.cancelWait();
         }   
     }
 })
@@ -434,7 +434,7 @@ $("#namechoice").on("click", function(){
 
 $("#challenge").on("click", function() {
     event.preventDefault();
-    if (game.opponentID != null) {
+    if (game.opponentID != null && game.oppDisplayName.length > 0) {
         if (game.players[game.opponentID].status == "Available") {
         var update = {};
         game.waiting = true;
@@ -479,27 +479,26 @@ $(".choice").on("click", function(){
         $("#paper").attr("style", "border: none;");
         $("#scissors").attr("style", "border: none;");
         $("#"+this.id).attr("style", "border: 7px solid #0086F1;");
-        game.players[game.myID].choice = this.id;
-        var update = {};
-        update["/"+game.myID + "/choice"] = game.players[game.myID].choice;
-        database.ref("/players").update(update);
+        game.choice = this.id;
     }
 })
 
 $("#makechoice").on("click", function(){
     event.preventDefault();
-    if (game.players[game.myID].choice == null){
+    if ( game.choice == null){
         alert("Please make a choice")
     } else{
         game.phase = 2;
-        var newImg = $("<img>").attr("src", "assets/images/" + game.players[game.myID].choice +".png")
+        var newImg = $("<img>").attr("src", "assets/images/" + game.choice +".png")
         $("#myarea").append(newImg);
 
         var update = {};
-        update["/"+game.myID + "/choice"] = game.players[game.myID].choice;
+        update["/"+game.myID + "/choice"] = game.choice;
         database.ref("/players").update(update);
         game.ready = true;
-        $("#"+game.players[game.myID].choice).attr("style", "border: 7px solid #0086F1;");
+        $("#rock").attr("style", "border: none;");
+        $("#paper").attr("style", "border: none;");
+        $("#scissors").attr("style", "border: none;");
     }
 })
 

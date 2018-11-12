@@ -157,6 +157,10 @@
     margin-top: 20px;
 }
 
+#oppIMG {
+    display: none;
+}
+
 #opparea img {
     max-height: 100%;
     max-width: 100%;
