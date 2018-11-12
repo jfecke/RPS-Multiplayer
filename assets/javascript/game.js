@@ -416,7 +416,7 @@ $("#namechoice").on("click", function(){
         alert("Please use only letters, numbers, '-', and '_' ")
     }
     else if (chooseName.length < 1) {
-        
+        $("#name").val("")
     }
     else if (chooseName.length > 11) {
         alert("Your name is too long, keep it under 112 characters.")
