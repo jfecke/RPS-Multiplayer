@@ -40,6 +40,7 @@ var game = {
     oppIMG: null,
     disconnect: false,
     choice: null,
+    challengedStatus: false,
     assignPlayer: function() {
         var newplayer = {};
         newplayer = {
@@ -88,7 +89,8 @@ var game = {
     },
     checkChallenge: function() {
         if (game.players[game.myID].status == "Busy" && game.players[game.myID].opponent != null) {
-            game.challengeResponse();   
+            game.challengeResponse();
+            game.challengedStatus = true;   
         }
     },
     challengeResponse: function() {
@@ -106,6 +108,14 @@ var game = {
                 game.decline();
             }
         }, 1000);
+    },
+    challengeRevoked: function() {
+        game.challengedStatus = false;
+        game.opponentID = null;
+        clearInterval(waitInterval);
+        $("#challenged").attr("style", "display: none;")
+        $("#myModal").attr("style", "display: none;")
+
     },
     waitResponse: function(){     
         $("#waiting").attr("style", "display: block;");
@@ -360,6 +370,9 @@ database.ref("/players").on("value", function(data){
             $("#opptitle").attr("style", "display: block;");
             $("#opptitle").text("Ready");
         }
+    }
+    if (game.challengedStatus = true && game.players[game.myID].status == "Available" ) {
+        game.challengeRevoked();
     }
 });
 
