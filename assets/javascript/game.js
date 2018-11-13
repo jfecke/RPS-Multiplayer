@@ -251,13 +251,21 @@ var game = {
         if (game.disconnect == true) {
             game.disCheck();
         } else {
-            setTimeout(game.resetRound, 3000);
+            setTimeout(game.resetChoice, 3000);
         }
+    },
+    resetChoice: function() {
+        var update = {}
+        update["/"+game.myID + "/choice"] = null;
+        database.ref("/players").update(update);
+        game.oppChoice = null;
+        setTimeout(game.resetRound, 3000);
     },
     resetRound: function() {
         game.disCheck();
         game.ready = false;
-        game.round++;
+        game.oppReady = false;
+        game.choice = null;
         $("#myarea").empty();
         $("#oppIMG").attr("style", "display: none;");
         $("#opptitle").attr("style", "display: block;");
@@ -266,12 +274,7 @@ var game = {
         $("#winner").attr("style", "display: none;");
         $("#tied").attr("style", "display: none;");
         $("#timer").attr("style", "display: block;");
-        var update = {}
-        update["/"+game.myID + "/choice"] = null;
-        database.ref("/players").update(update);
-        game.oppChoice = null;
-        game.oppReady = false;
-        game.choice = null;
+        game.round++;
         if (game.disconnect == true) {
             game.disCheck();
         } else {
