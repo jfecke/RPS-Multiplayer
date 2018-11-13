@@ -165,7 +165,7 @@ var game = {
         $("#remaining").text(game.timer);
         if (game.ready && game.oppReady) {
             clearInterval(game.intervalTime)
-            game.checkWinner();
+            setTimeout(game.checkWinner(), 2000) ;
         }
         if (game.timer <= 0) {
             clearInterval(game.intervalTime);
@@ -212,6 +212,7 @@ var game = {
     },
     outOfTime: function() {
         game.disCheck();
+        game.phase = 3;
         if (game.ready == false && game.oppReady == false) {
             game.tie()
         } else if (game.ready) {
