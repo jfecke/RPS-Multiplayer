@@ -386,7 +386,7 @@ database.ref("/players").on("value", function(data){
     //if (game.challengedStatus == true && game.players[game.myID].status == "Available" ) {
     //    game.challengeRevoked();
     //    console.log("Revoked")
-    }
+    //}
 });
 
 database.ref("/messages").orderByChild("date").limitToLast(1).on("child_added", function(data) {
