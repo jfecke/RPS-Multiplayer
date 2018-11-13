@@ -363,10 +363,12 @@ database.ref("/players").on("value", function(data){
             clearInterval(waitInterval);
             game.challengedStatus = false;
             game.cancelWait();
+            console.log("Cancel Wait")
         }   
     }
     if (typeof(game.players[game.opponentID])=="undefined" && (game.phase == 1 || game.phase == 2)) {
         game.disconnect = true;
+        console.log("Disconnet")
     }
     else if (game.opponentID != null) {
         if (data.val()[game.opponentID].choice != undefined && (game.phase == 1 || game.phase == 2) ) {
@@ -378,6 +380,7 @@ database.ref("/players").on("value", function(data){
     }
     if (game.challengedStatus == true && game.players[game.myID].status == "Available" ) {
         game.challengeRevoked();
+        console.log("Revoked")
     }
 });
 
