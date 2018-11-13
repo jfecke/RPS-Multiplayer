@@ -254,6 +254,7 @@ var game = {
         }
     },
     resetRound: function() {
+        console.log("resetRound");
         game.disCheck();
         game.ready = false;
         game.round++;
@@ -278,6 +279,7 @@ var game = {
         }
     },
     matchReset: function(){
+        console.log("reset");
         game.ready = false;
         game.phase = 0;
         game.round = 1;
@@ -302,6 +304,7 @@ var game = {
         $("#challengelosses").text("");
     },
     cancelWait: function() {
+        console.log("CancelWait");
         $("#waiting").attr("style", "display: none;");
         $("#myModal").attr("style", "display: none;");
         var update = {};
@@ -317,6 +320,7 @@ var game = {
         $("#challengelosses").text("");
     },
     decline: function() {
+        console.log("DECLINED");
         var update = {};
         update["/"+game.opponentID + "/status"] = "Available";
         update["/"+game.myID + "/status"] = "Available";
@@ -328,6 +332,7 @@ var game = {
         $("#myModal").attr("style", "display: none;")
     },
     disCheck: function() {
+        console.log("DISCONNECT");
         if (game.disconnect == true) {
             clearInterval(game.intervalTime);
             game.matchReset();
@@ -378,9 +383,9 @@ database.ref("/players").on("value", function(data){
             $("#opptitle").text("Ready");
         }
     }
-    if (game.challengedStatus == true && game.players[game.myID].status == "Available" ) {
-        game.challengeRevoked();
-        console.log("Revoked")
+    //if (game.challengedStatus == true && game.players[game.myID].status == "Available" ) {
+    //    game.challengeRevoked();
+    //    console.log("Revoked")
     }
 });
 
