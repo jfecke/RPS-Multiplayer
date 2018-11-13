@@ -38,6 +38,7 @@ var game = {
     roundlosses: 0,
     intervalTime: null,
     waitInterval: null,
+    waittime: 10,
     waiting: false,
     oppIMG: null,
     disconnect: false,
@@ -101,11 +102,11 @@ var game = {
         $("#challenger").text(oppname);
         $("#challenged").attr("style", "display: block;")
         $("#myModal").attr("style", "display: block;")
-        var waittime = 10;
+        game.waittime = 10;
         waitInterval = setInterval(function(){
             waittime--
             $("#waittime").text(waittime);
-            if (waittime <= 0) {
+            if (game.waittime <= 0) {
                 clearInterval(waitInterval);
                 game.decline();
             }
