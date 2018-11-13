@@ -1,11 +1,10 @@
   // TO DO LIST
   // 
-  // 1. Limit choice submissions.
-  // 2. Do not use alerts, they pause timers.
   // 3. Make Win, Lose, and Tie screens better
   // 4. Make Vitory or Defeat screens
   // 5. Make mobile
-  // 6. Add Sound
+  // 6. Add Computer Opponent
+  // 7. Add Sound
   //  
 var config = {
 apiKey: "AIzaSyC57IjpWiDzhAPtF_RDyU61ssXIzQU8Qi4",
@@ -134,6 +133,7 @@ var game = {
         }, 1000);
     },
     playGame: function() {
+        game.challengedStatus = false;
         if (game.roundwins >= 2) {
             game.wins++;
             var update = {};
@@ -220,7 +220,6 @@ var game = {
         else {
             game.lose("time")
         }
-        game.round++;
     },
     win: function(value){
         game.disCheck();
@@ -356,10 +355,12 @@ database.ref("/players").on("value", function(data){
             $("#waiting").attr("style", "display: none;");
             $("#gamezone").attr("style", "display: block;");
             game.waiting = false;
+            game.challengedStatus = false;
             clearInterval(waitInterval);
             game.playGame();
         } else if (game.waiting == true && game.players[game.opponentID].challenge == false) {
             clearInterval(waitInterval);
+            game.challengedStatus = false;
             game.cancelWait();
         }   
     }
@@ -487,8 +488,8 @@ $(".choice").on("click", function(){
 $("#makechoice").on("click", function(){
     event.preventDefault();
     if ( game.choice == null){
-        alert("Please make a choice")
-    } else{
+        
+    } else if (game.phase == 1) {
         game.phase = 2;
         var newImg = $("<img>").attr("src", "assets/images/" + game.choice +".png")
         $("#myarea").append(newImg);
