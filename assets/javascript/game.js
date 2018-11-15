@@ -164,12 +164,9 @@ var game = {
         game.timer--;
         $("#timer").attr("style", "display: block;");
         $("#remaining").text(game.timer);
-        if (game.ready && game.oppReady) {
-            clearInterval(game.intervalTime)
-            setTimeout(game.checkWinner(), 2000) ;
-        }
         if (game.timer <= 0) {
             clearInterval(game.intervalTime);
+            game.phase = 2;
             game.outOfTime();
         }
         if (game.disconnect == true) {
@@ -184,9 +181,17 @@ var game = {
         if (game.disconnect == true) {
             game.disCheck();
         } else {
-            if (game.players[game.myID].choice == "rock") {
+            if (game.players[game.myID].choice == "time") {
+                if (game.oppChoice == "time") {
+                    game.tie("time");
+                } else {
+                    game.lose("time")
+                }
+            } else if (game.oppChoice == "time") {
+                game.win("time")
+            } else if (game.players[game.myID].choice == "rock") {
                 if (game.oppChoice == "rock") {
-                    game.tie();
+                    game.tie("rock");
                 } else if (game.oppChoice == "scissors") {
                     game.win("rock");
                 } else {
@@ -194,7 +199,7 @@ var game = {
                 }
             } else if (game.players[game.myID].choice == "paper"){
                 if (game.oppChoice == "paper") {
-                    game.tie();
+                    game.tie("paper");
                 } else if (game.oppChoice == "rock") {
                     game.win("paper");
                 } else {
@@ -202,7 +207,7 @@ var game = {
                 }
             } else {
                 if (game.oppChoice == "scissors") {
-                    game.tie();
+                    game.tie("scissors");
                 } else if (game.oppChoice == "paper") {
                     game.win("scissors");
                 } else {
@@ -213,59 +218,87 @@ var game = {
     },
     outOfTime: function() {
         game.disCheck();
-        game.phase = 3;
-        if (game.ready == false && game.oppReady == false) {
-            game.tie()
-        } else if (game.ready) {
-            game.win("time")
-        } 
-        else {
-            game.lose("time")
-        }
+        game.choice = "time";
+        var newImg = $("<img>").attr("src", "assets/images/" + game.choice +".png");
+        $("#myarea").append(newImg);
+        var update = {};
+        update["/"+game.myID + "/choice"] = game.choice;
+        database.ref("/players").update(update);
+        game.ready = true;
+        $("#rock").attr("style", "border: none;");
+        $("#paper").attr("style", "border: none;");
+        $("#scissors").attr("style", "border: none;");
     },
     win: function(value){
-        game.disCheck();
         game.roundwins++;
+        if (value == "rock") {
+            $("#winreason").text("Rock smashes Scissors!")
+        } else if (value == "scissors") {
+            $("#winreason").text("Scissors cuts Paper!")
+        } else if (value == "paper") {
+            $("#winreason").text("Paper wraps Rock!")
+        } else if (value == "time") {
+            $("#winreason").text("Opponent ran out of Time!")
+        }
         $("#timer").attr("style", "display: none;")
         $("#winner").attr("style", "display: block;")
+        
         if (game.disconnect == true) {
             game.disCheck();
         } else {
-            setTimeout(game.resetRound, 3000);
+            setTimeout(game.resetChoice, 1000);
         }
     },
     lose: function(value){
-        game.disCheck();
         game.roundlosses++;
+        if (value == "rock") {
+            $("#losereason").text("Paper wraps Rock!")
+        } else if (value == "scissors") {
+            $("#losereason").text("Rock smashes Scissors!")
+        } else if (value == "paper") {
+            $("#losereason").text("Scissors cuts Paper!")
+        } else if (value == "time") {
+            $("#losereason").text("You ran out of Time!")
+        }
         $("#timer").attr("style", "display: none;")
         $("#loser").attr("style", "display: block;")
         if (game.disconnect == true) {
             game.disCheck();
         } else {
-            setTimeout(game.resetRound, 3000);
+            setTimeout(game.resetChoice, 1000);
         }
     },
-    tie: function(){
+    tie: function(value){
+        if (value == "rock") {
+            $("#tiereason").text("You both chose Rock!")
+        } else if (value == "scissors") {
+            $("#tiereason").text("You both chose Scissors!")
+        } else if (value == "paper") {
+            $("#tiereason").text("You both chose Paper!")
+        } else if (value == "time") {
+            $("#tiereason").text("You both ran out of Time!")
+        }
         $("#timer").attr("style", "display: none;");
         $("#tied").attr("style", "display: block;");
         if (game.disconnect == true) {
             game.disCheck();
         } else {
-            setTimeout(game.resetChoice, 3000);
+            setTimeout(game.resetChoice, 1000);
         }
     },
     resetChoice: function() {
         var update = {}
         update["/"+game.myID + "/choice"] = null;
+        update["/"+game.opponentID + "/choice"] = null;
         database.ref("/players").update(update);
         game.oppChoice = null;
+        game.choice = null;
         setTimeout(game.resetRound, 3000);
     },
     resetRound: function() {
         game.disCheck();
         game.ready = false;
         game.oppReady = false;
-        game.choice = null;
         $("#myarea").empty();
         $("#oppIMG").attr("style", "display: none;");
         $("#opptitle").attr("style", "display: block;");
@@ -374,17 +407,19 @@ database.ref("/players").on("value", function(data){
         game.disconnect = true;
     }
     else if (game.opponentID != null) {
-        if (data.val()[game.opponentID].choice != undefined && (game.phase == 1 || game.phase == 2) ) {
+        if (data.val()[game.opponentID].choice != undefined && game.phase == 2 && data.val()[game.myID].choice != undefined ) {
             game.oppChoice = data.val()[game.opponentID].choice;
-            game.oppReady = true;
             $("#opptitle").attr("style", "display: block;");
             $("#opptitle").text("Ready");
+            game.checkWinner();
         }
     }
     if (game.challengedStatus == true && game.players[game.myID].status == "Available" ) {
         game.challengeRevoked();
         console.log("Revoked")
     }
+
+
 });
 
 database.ref("/messages").orderByChild("date").limitToLast(1).on("child_added", function(data) {
@@ -498,9 +533,9 @@ $("#makechoice").on("click", function(){
         
     } else if (game.phase == 1) {
         game.phase = 2;
+        clearInterval(game.intervalTime);
         var newImg = $("<img>").attr("src", "assets/images/" + game.choice +".png")
         $("#myarea").append(newImg);
-
         var update = {};
         update["/"+game.myID + "/choice"] = game.choice;
         database.ref("/players").update(update);
