@@ -53,10 +53,28 @@
     cursor: pointer;
 }
 
+#loginscreen {
+    min-height: 100px;
+    margin: 300px auto;
+    display: block;
+}
+
+.btn-holder{
+    margin: 10px auto;
+}
+
+#loginscreen{
+    display: block;
+}
+
+#signinscreen{
+    display: none;
+}
+
 #titlescreen {
     min-height: 400px;
     margin: 100px auto;
-    display: block;
+    display: none;
 }
 
 #titlescreen p {

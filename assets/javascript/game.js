@@ -1,5 +1,6 @@
   // TO DO LIST
-  // 
+  // 1. Create Sign Up Page
+  // 2. User validate all inputs
   // 3. Make Win, Lose, and Tie screens better
   // 4. Make Vitory or Defeat screens
   // 5. Make mobile
@@ -7,15 +8,16 @@
   // 7. Add Sound
   //  
 var config = {
-apiKey: "AIzaSyC57IjpWiDzhAPtF_RDyU61ssXIzQU8Qi4",
-authDomain: "rps-multiplayer-2dcb5.firebaseapp.com",
-databaseURL: "https://rps-multiplayer-2dcb5.firebaseio.com",
-projectId: "rps-multiplayer-2dcb5",
-storageBucket: "rps-multiplayer-2dcb5.appspot.com",
-messagingSenderId: "185022119661"
+    apiKey: "AIzaSyC57IjpWiDzhAPtF_RDyU61ssXIzQU8Qi4",
+    authDomain: "rps-multiplayer-2dcb5.firebaseapp.com",
+    databaseURL: "https://rps-multiplayer-2dcb5.firebaseio.com",
+    projectId: "rps-multiplayer-2dcb5",
+    storageBucket: "rps-multiplayer-2dcb5.appspot.com",
+    messagingSenderId: "185022119661"
 };
 firebase.initializeApp(config);
 var database = firebase.database();
+var auth = firebase.auth();
 var connectionsRef = database.ref("/connections");
 var connectedRef = database.ref(".info/connected");
 var game = {
@@ -29,7 +31,6 @@ var game = {
     oppReady: false,
     wins: 0,
     losses: 0,
-    myConnect: [],
     players: {},
     playerIDs: [],
     phase: 0,
@@ -53,7 +54,8 @@ var game = {
             challenge: false,
             opponent: null,
             status: "Available",
-            choice: null
+            choice: null,
+            connected: "na"
         }     
         var playerid = database.ref("/players").push(newplayer);
         game.myID = playerid.path.pieces_[1];
@@ -72,22 +74,30 @@ var game = {
         for (var i = 0; i < game.playerIDs.length; i++) {
             var newRow = $("<tr>");
             var name  = $("<td>").text(game.players[game.playerIDs[i]].displayName);
+            var namecheck = game.players[game.playerIDs[i]].displayName;
             var win  = $("<td>").text(game.players[game.playerIDs[i]].wins);
             var lose  = $("<td>").text(game.players[game.playerIDs[i]].losses);
             var status  = $("<td>").text(game.players[game.playerIDs[i]].status);
-            newRow.append(name, win, lose, status);
-            newRow.attr("id", game.playerIDs[i]);
+            var connectCheck = game.players[game.playerIDs[i]].connected;
+
+
+            if (typeof(namecheck) != "undefined" && connectCheck != false) {
+                newRow.append(name, win, lose, status);
+                newRow.attr("id", game.playerIDs[i]);
            
-            newRow.on("click", function() { 
-                if (this.id != game.myID) {
-                game.opponentID = this.id
-                game.oppDisplayName = game.players[game.opponentID].displayName;
-                $("#challengename").text(game.players[game.opponentID].displayName);
-                $("#challengewins").text(game.players[game.opponentID].wins);
-                $("#challengelosses").text(game.players[game.opponentID].losses);
-                }
-            })
-            $("#game-lobby").append(newRow);
+                newRow.on("click", function() { 
+                    if (this.id != game.myID) {
+                        game.opponentID = this.id
+                        game.oppDisplayName = game.players[game.opponentID].displayName;
+                        $("#challengename").text(game.players[game.opponentID].displayName);
+                        $("#challengewins").text(game.players[game.opponentID].wins);
+                        $("#challengelosses").text(game.players[game.opponentID].losses);
+                    }
+                })
+                $("#game-lobby").append(newRow);
+
+            }
+
         }
     },
     checkChallenge: function() {
@@ -369,7 +379,24 @@ var game = {
             clearInterval(game.intervalTime);
             game.matchReset();
         }
-    } 
+    }, 
+    loginSuccess: function(uid) {
+        var update = {};
+        update["/"+game.myID] = null
+        database.ref("/players").update(update);
+        game.myID = uid; 
+        database.ref("/players").once("value", function(data){ 
+            game.myDisplayName = data.val()[game.myID].displayName
+            game.wins = data.val()[game.myID].wins
+            game.losses = data.val()[game.myID].losses
+        })
+        database.ref("/players/" + game.myID + "/connected").set(true);
+        $("#myModal").attr("style", "display: none");
+        $("#loginscreen").attr("style", "display: none");
+    },
+    getStatus: function() {
+
+    }
 };
 
 connectedRef.on("value", function(snap) {
@@ -437,6 +464,15 @@ database.ref("/messages").orderByChild("date").limitToLast(1).on("child_added", 
         update = {};
         update["/"+ messageid] = null;
         database.ref("/messages").update(update);
+    }
+})
+
+auth.onAuthStateChanged(firebaseUser => {
+    if (firebaseUser) {
+        game.myID = firebaseUser.uid
+        var ref = database.ref("/players/"+game.myID+ "/connected");
+        ref.onDisconnect().set(false);  
+
     }
 })
 
@@ -577,3 +613,55 @@ $("#chat").on("click", function() {
 })
 
 
+$("#play").on("click", function() {
+    $("#loginscreen").attr("style", "display: none");
+    $("#titlescreen").attr("style", "display: block");
+})
+
+$("#signin").on("click", function() {
+    $(".btn-holder").attr("style", "display: none");
+    $("#signinscreen").attr("style", "display: block");
+})
+
+$("#login").on("click", function() {
+    var email = $("#email").val();
+    var password = $("#password").val();
+    var promise = auth.signInWithEmailAndPassword(email, password);
+    promise
+        .then(user => game.loginSuccess(user.user.uid))
+        .catch(e => console.log(e.message));
+})
+
+
+$("#signup").on("click", function() {
+    $("#btn-holder").attr("style", "display: none");
+    console.log("Sign-Up")
+})
+
+
+$("#submit").on("click", function() {
+    
+    game.myDisplayName = $("#displayname").val()
+    var email = $("#upemail").val()
+    var password = $("#uppassword").val()
+
+    var promise = auth.createUserWithEmailAndPassword(email, password);
+    promise.then(
+        user => game.myID = user.uid
+    );
+    
+    update["/"+game.myID + "/displayName"] =  game.myDisplayName;
+    update["/"+game.myID + "/wins"] = 0;
+    update["/"+game.myID + "/losses"] = 0;
+    update["/"+game.myID + "/challenge"] = false;
+    update["/"+game.myID + "/status"] = "Available";
+    database.ref("/players").update(update);
+    $("#myModal").attr("style", "display: none");
+    $("#loginscreen").attr("style", "display: none");
+})
+
+
+
+
+        
+        
