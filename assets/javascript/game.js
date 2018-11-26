@@ -640,16 +640,13 @@ $("#signup").on("click", function() {
 
 
 $("#submit").on("click", function() {
-    
     game.myDisplayName = $("#displayname").val()
     var email = $("#upemail").val()
     var password = $("#uppassword").val()
-
     var promise = auth.createUserWithEmailAndPassword(email, password);
     promise.then(
         user => game.myID = user.uid
     );
-    
     update["/"+game.myID + "/displayName"] =  game.myDisplayName;
     update["/"+game.myID + "/wins"] = 0;
     update["/"+game.myID + "/losses"] = 0;
