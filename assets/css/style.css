@@ -161,3 +161,11 @@ span {
     cursor: pointer;
 }
 
+#instructions{
+    width: 60%;
+    text-align: center;
+    margin: 5px auto 15px auto;
+    font-weight: bold;
+    font-size: 22px;
+}
+
